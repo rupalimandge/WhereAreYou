@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.parse.ParseInstallation;
@@ -23,7 +22,6 @@ import com.parse.ParseQuery;
 public class MainActivity extends Activity {
 
     Button btnSend = null;
-    EditText etMyMessage = null;
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
 
     @Override
@@ -32,7 +30,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         btnSend = (Button) findViewById(R.id.btnSend);
-        etMyMessage = (EditText) findViewById(R.id.etMyMessage);
 
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 
@@ -82,7 +79,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                String strMessage = etMyMessage.getText().toString();
+
 
               /*  ParsePush push = new ParsePush();
                 String message = strMessage;
@@ -90,11 +87,16 @@ public class MainActivity extends Activity {
                 push.setMessage(message);
                 push.sendInBackground();*/
 
+                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 
                 ParseQuery query = ParseInstallation.getQuery();
                 query.whereEqualTo("deviceId", "357478060184543");
                 ParsePush push = new ParsePush();
                 push.setQuery(query);
+                String strMessage = null, strPrefix = "WAY: ";
+
+                strMessage = strPrefix.concat(installation.get("deviceId").toString().concat(" wants to know your current location."));
+
                 push.setMessage(strMessage);
                 push.sendInBackground();
 
