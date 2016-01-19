@@ -1,6 +1,5 @@
 package com.rupalimandge.whereareyou;
 
-import android.*;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -43,8 +41,9 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
 
     Button btnSend = null;
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
-    String deviceId = null;
+    String deviceId = null, accountName = "", receiverLat, receiverLong;
 
+    boolean isFromReceiver = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +55,15 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
         // this code will work for receiver. receiver will get the device id(the unique identifer of device) and will update the current location.
         if(this.getIntent().getExtras() != null){
             deviceId = this.getIntent().getStringExtra("DeviceId");
-            btnSend.setText("Share Location");
+
+            if(deviceId != null) {
+                isFromReceiver = true;
+                btnSend.setText("Share Location");
+            }else{
+                accountName = this.getIntent().getStringExtra("AccountName");
+                isFromReceiver = false;
+            }
         }
-
-
 
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 
@@ -156,7 +160,7 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
 
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("deviceId",mngr.getDeviceId());
-            installation.put("name", "Krishna Khandagale");
+            installation.put("name", accountName);
             installation.saveInBackground();
         }
 
@@ -165,28 +169,32 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
             @Override
             public void onClick(View view) {
 
-
-
-              /*  ParsePush push = new ParsePush();
+                if(isFromReceiver){
+                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                    installation.put("receiverLatitude", receiverLat);
+                    installation.put("receiverLongitude", receiverLong);
+                    installation.saveInBackground();
+                }else{
+                    /*  ParsePush push = new ParsePush();
                 String message = strMessage;
                 // push.setChannel("WhereAreYou");
                 push.setMessage(message);
                 push.sendInBackground();*/
 
-                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 
-                ParseQuery query = ParseInstallation.getQuery();
-                query.whereEqualTo("deviceId", "357478060184543");
-                ParsePush push = new ParsePush();
-                push.setQuery(query);
-                String strMessage = null, strPrefix = ":";
+                    ParseQuery query = ParseInstallation.getQuery();
+                    query.whereEqualTo("deviceId", "357478060184543");
+                    ParsePush push = new ParsePush();
+                    push.setQuery(query);
+                    String strMessage = null, strPrefix = ":";
 
-                // deviceId:name wants to know....
-                strMessage = installation.get("deviceId").toString().concat(strPrefix.concat(installation.get("name").toString().concat(" wants to know your current location.")));
+                    // deviceId:name wants to know....
+                    strMessage = installation.get("deviceId").toString().concat(strPrefix.concat(installation.get("name").toString().concat(" wants to know your current location.")));
 
-                push.setMessage(strMessage);
-                push.sendInBackground();
-
+                    push.setMessage(strMessage);
+                    push.sendInBackground();
+                }
             }
         });
     }
@@ -226,6 +234,23 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
         googleMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title("Marker"));
+
+        if(isFromReceiver) {
+
+            receiverLat = String.valueOf(location.getLatitude());
+            receiverLong = String.valueOf(location.getLongitude());
+
+           /* ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("receiverLatitude", location.getLatitude());
+            installation.put("receiverLongitude", location.getLongitude());
+            installation.saveInBackground();*/
+        }else{
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("senderLatitude", String.valueOf(location.getLatitude()));
+            installation.put("senderLongitude", String.valueOf(location.getLongitude()));
+            installation.saveInBackground();
+        }
+
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
         googleMap.animateCamera(cameraUpdate);
         locationManager.removeUpdates(this);
@@ -304,7 +329,7 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
 
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("deviceId",mngr.getDeviceId());
-                    installation.put("name","Krishna Khandagale");
+                    installation.put("name",accountName);
                     installation.saveInBackground();
 
                 } else {

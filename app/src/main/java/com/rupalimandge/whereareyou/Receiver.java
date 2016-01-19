@@ -52,10 +52,10 @@ public class Receiver extends ParsePushBroadcastReceiver {
         builder.setSmallIcon(R.drawable.google);
         builder.setAutoCancel(true);
 
-        Intent i = new Intent(context, MainActivity.class);
+        Intent i = new Intent(context, GoogleMapLocationActivity.class);
         i.putExtra("DeviceId",deviceId);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addParentStack(GoogleMapLocationActivity.class);
         stackBuilder.addNextIntent(i);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
