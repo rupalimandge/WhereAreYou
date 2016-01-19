@@ -49,7 +49,7 @@ public class Receiver extends ParsePushBroadcastReceiver {
             e.printStackTrace();
         }
 
-        builder.setSmallIcon(R.drawable.image);
+        builder.setSmallIcon(R.drawable.google);
         builder.setAutoCancel(true);
 
         Intent i = new Intent(context, MainActivity.class);
