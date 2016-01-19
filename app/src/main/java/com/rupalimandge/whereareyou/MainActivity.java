@@ -23,6 +23,7 @@ public class MainActivity extends Activity {
 
     Button btnSend = null;
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    String deviceId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,13 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         btnSend = (Button) findViewById(R.id.btnSend);
+
+        // this code will work for receiver. receiver will get the device id(the unique identifer of device) and will update the current location.
+        if(this.getIntent().getExtras() != null){
+            deviceId = this.getIntent().getStringExtra("DeviceId");
+            btnSend.setText("Share Location");
+        }
+
 
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 
@@ -72,6 +80,7 @@ public class MainActivity extends Activity {
 
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("deviceId",mngr.getDeviceId());
+            installation.put("name","Krishna Khandagale");
             installation.saveInBackground();
         }
 
@@ -93,9 +102,10 @@ public class MainActivity extends Activity {
                 query.whereEqualTo("deviceId", "357478060184543");
                 ParsePush push = new ParsePush();
                 push.setQuery(query);
-                String strMessage = null, strPrefix = "WAY: ";
+                String strMessage = null, strPrefix = ":";
 
-                strMessage = strPrefix.concat(installation.get("deviceId").toString().concat(" wants to know your current location."));
+                // deviceId:name wants to know....
+                strMessage = installation.get("deviceId").toString().concat(strPrefix.concat(installation.get("name").toString().concat(" wants to know your current location.")));
 
                 push.setMessage(strMessage);
                 push.sendInBackground();
@@ -142,6 +152,7 @@ public class MainActivity extends Activity {
 
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("deviceId",mngr.getDeviceId());
+                    installation.put("name","Krishna Khandagale");
                     installation.saveInBackground();
 
                 } else {

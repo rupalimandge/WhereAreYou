@@ -32,15 +32,19 @@ public class Receiver extends ParsePushBroadcastReceiver {
     @Override
     public void onPushReceive(Context context, Intent intent) {
         JSONObject data = getDataFromIntent(intent);
-        // Do something with the data. To create a notification do:
+        String deviceId = null;
+                // Do something with the data. To create a notification do:
 
        NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         try {
+
+            String msgString = data.getString("alert");
+            deviceId = msgString.split(":")[0];
             builder.setContentTitle("WhereAreYou");
-            builder.setContentText(data.getString("alert"));
+            builder.setContentText(msgString.split(":")[1]);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -49,6 +53,7 @@ public class Receiver extends ParsePushBroadcastReceiver {
         builder.setAutoCancel(true);
 
         Intent i = new Intent(context, MainActivity.class);
+        i.putExtra("DeviceId",deviceId);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(i);
