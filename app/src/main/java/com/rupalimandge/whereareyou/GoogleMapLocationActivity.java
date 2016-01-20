@@ -79,7 +79,9 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
 
 
                 // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                PermissionUtils.requestPermission(this,Manifest.permission.ACCESS_FINE_LOCATION,100,new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+
+                /*if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                     // Show an expanation to the user *asynchronously* -- don't block
@@ -97,7 +99,7 @@ public class GoogleMapLocationActivity extends AppCompatActivity implements OnMa
                     // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                     // app-defined int constant. The callback method gets the
                     // result of the request.
-                }
+                }*/
             } else if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
